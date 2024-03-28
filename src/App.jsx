@@ -7,8 +7,10 @@ import removeSpawn from "./data/removeSpawn.json";
 import { saveAs } from "file-saver";
 import LoadingScreen from "./components/LoadingScreen";
 
+const version = "1.4.1";
+
 function App() {
-  const { pokemon, loadingSpawns } = usePokedata("1.4.1");
+  const { pokemon, loadingSpawns } = usePokedata(version);
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -42,6 +44,12 @@ function App() {
     setLoading(false);
   }, [selected]);
 
+  const handleClearCache = useCallback(() => {
+    localStorage.removeItem("cachedPokemonRefs-" + version);
+    localStorage.removeItem("langData-" + version);
+    window.location.reload();
+  }, []);
+
   if (loadingSpawns) {
     return <LoadingScreen detail="Spawn Data" />;
   }
@@ -64,6 +72,7 @@ function App() {
         <Button variant="contained" onClick={handleDownload}>
           Download
         </Button>
+        <Button variant="contained" color="warning" onClick={handleClearCache}>Clear Cache</Button>
       </Stack>
     </>
   );
