@@ -60,13 +60,6 @@ function App() {
           <Button variant="contained" onClick={handleDownload}>
             Download
           </Button>
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={() => setSelected([])}
-          >
-            Clear
-          </Button>
         </Stack>
       )}
     </>

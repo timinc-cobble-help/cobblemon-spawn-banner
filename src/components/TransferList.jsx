@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Stack } from "@mui/system";
 import { useCallback, useMemo, useState } from "react";
-import ListBox from "../ListBox";
+import ListBox from "./ListBox";
 import { Button } from "@mui/material";
 
 export default function TransferList({ items, selected, setSelected }) {
@@ -23,6 +23,14 @@ export default function TransferList({ items, selected, setSelected }) {
         !selected.find((selectedItem) => item.value === selectedItem.value)
     );
   }, [items, selected]);
+  
+  const handleSelectAll = useCallback(() => {
+    setSelected(items);
+  }, [items]);
+
+  const handleSelectNone = useCallback(() => {
+    setSelected([]);
+  }, []);
 
   const handleShiftSelected = useCallback(() => {
     setSelected((p) => [
@@ -45,11 +53,17 @@ export default function TransferList({ items, selected, setSelected }) {
         setSelected={setSelectedSelected}
       />
       <Stack direction="column" justifyContent="center" gap={3}>
+        <Button onClick={handleSelectAll} variant="contained">
+          &gt;&gt;
+        </Button>
         <Button onClick={handleShiftSelected} variant="contained">
           &gt;
         </Button>
         <Button onClick={handleShiftUnselected} variant="contained">
           &lt;
+        </Button>
+        <Button onClick={handleSelectNone} variant="contained">
+          &lt;&lt;
         </Button>
       </Stack>
       <ListBox
