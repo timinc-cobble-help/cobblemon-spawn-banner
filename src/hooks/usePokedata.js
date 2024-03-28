@@ -36,7 +36,7 @@ export default function usePokedata(version = "main") {
       );
       setLangData(data);
     }
-    fetchLangData();
+    if (!langData) fetchLangData();
   }, [setLangData, version]);
 
   const pokemon = useMemo(() => {
