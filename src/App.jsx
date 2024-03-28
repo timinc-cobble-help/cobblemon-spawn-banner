@@ -19,7 +19,6 @@ function App() {
       const splitPath = path.split("/");
       const dataIndex = splitPath.indexOf("data");
       const finalPath = splitPath.slice(dataIndex).join("/");
-      console.log(finalPath);
       zip.file(finalPath, JSON.stringify(removeSpawn, null, 2));
     }
     zip.file(
