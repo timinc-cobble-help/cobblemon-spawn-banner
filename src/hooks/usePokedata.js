@@ -1,32 +1,37 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "./useLocalStorage";
 import { fetchDirectory, fetchFile } from "../api/gitlab";
 
 export default function usePokedata(version = "main") {
-  const [cachedPokemonRefs, setCachedPokemonRefs] = useLocalStorage("cachedPokemonRefs-" + version, []);
+  const [cachedPokemonRefs, setCachedPokemonRefs] = useLocalStorage("cachedPokemonRefs-" + version, {});
   const [langData, setLangData] = useLocalStorage("langData-" + version, null);
+  const [loadingSpawns, setLoadingSpawns] = useState(true);
 
-  const huntForPokemon = useCallback(
-    async (pokemonName) => {
-      const currentKnownPokemon = [...cachedPokemonRefs];
-      while (
-        !currentKnownPokemon.some(({ name }) => name.endsWith(`${pokemonName}.json`))
-      ) {
+  useEffect(() => {
+    let running = true;
+    const fetchAllSpawns = async () => {
+      setLoadingSpawns(true);
+      const currentKnownPokemon = [];
+      let page = Math.ceil(Object.keys(cachedPokemonRefs).length / 20) + 1;
+      while (true) {
         const data = await fetchDirectory(
           "common/src/main/resources/data/cobblemon/spawn_pool_world",
-          { page: currentKnownPokemon.length / 20 + 1, recursive: true, version }
+          { page, recursive: true, version }
         );
+        if (!running) return;
         if (data.length === 0)
-          throw new Error("Pokemon not found: " + pokemonName);
+          break;
+        page++;
         currentKnownPokemon.push(...data);
+        setCachedPokemonRefs(p => currentKnownPokemon.reduce((acc, { name, type, path }) => type === "blob" ? { ...acc, [name]: { path } } : acc, p));
       }
-      setCachedPokemonRefs(currentKnownPokemon);
-      return currentKnownPokemon.find(
-        ({ name }) => name.endsWith(`${pokemonName}.json`)
-      );
-    },
-    [cachedPokemonRefs, setCachedPokemonRefs, version]
-  );
+      setLoadingSpawns(false);
+    };
+    fetchAllSpawns();
+    return () => {
+      running = false;
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchLangData() {
@@ -41,15 +46,11 @@ export default function usePokedata(version = "main") {
 
   const pokemon = useMemo(() => {
     if (!langData) return [];
-    return Object.entries(langData)
-      .filter(([k]) => {
-        return /cobblemon\.species\.[^.]+\.name/.test(k);
-      })
-      .map(([k, v]) => ({
-        value: k.match(/cobblemon\.species\.([^.]+)\.name/)[1],
-        label: v,
-      }));
+    return Object.entries(cachedPokemonRefs).map(([fileName, { path }]) => ({
+      label: langData[`cobblemon.species.${/_(.*)\./g.exec(fileName)[1]}.name`],
+      value: path
+    }));
   }, [langData]);
 
-  return { huntForPokemon, pokemon };
+  return { pokemon, loadingSpawns };
 }

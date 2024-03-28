@@ -5,17 +5,17 @@ import { useCallback, useState } from "react";
 import JSZip from "jszip";
 import removeSpawn from "./data/removeSpawn.json";
 import { saveAs } from "file-saver";
+import LoadingScreen from "./components/LoadingScreen";
 
 function App() {
-  const { huntForPokemon, pokemon } = usePokedata("1.4.1");
+  const { pokemon, loadingSpawns } = usePokedata("1.4.1");
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleDownload = useCallback(async () => {
     setLoading(true);
     const zip = new JSZip();
-    for (const { value } of selected) {
-      const { path } = await huntForPokemon(value);
+    for (const { value: path } of selected) {
       const splitPath = path.split("/");
       const dataIndex = splitPath.indexOf("data");
       const finalPath = splitPath.slice(dataIndex).join("/");
@@ -40,27 +40,31 @@ function App() {
       saveAs(content, "removals.zip");
     });
     setLoading(false);
-  }, [huntForPokemon, selected]);
+  }, [selected]);
+
+  if (loadingSpawns) {
+    return <LoadingScreen detail="Spawn Data" />;
+  }
+
+  if (loading) {
+    return <LoadingScreen detail="Zip File" />;
+  }
 
   return (
     <>
       <CssBaseline />
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <Stack direction="column" sx={{ height: "100vh" }} p={1} gap={1}>
-          {pokemon && (
-            <TransferList
-              items={pokemon}
-              selected={selected}
-              setSelected={setSelected}
-            />
-          )}
-          <Button variant="contained" onClick={handleDownload}>
-            Download
-          </Button>
-        </Stack>
-      )}
+      <Stack direction="column" sx={{ height: "100vh" }} p={1} gap={1}>
+        {pokemon && (
+          <TransferList
+            items={pokemon}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        )}
+        <Button variant="contained" onClick={handleDownload}>
+          Download
+        </Button>
+      </Stack>
     </>
   );
 }
