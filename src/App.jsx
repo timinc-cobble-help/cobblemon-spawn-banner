@@ -7,7 +7,7 @@ import removeSpawn from "./data/removeSpawn.json";
 import { saveAs } from "file-saver";
 import LoadingScreen from "./components/LoadingScreen";
 
-const version = "1.4.1";
+const version = "1.5.2";
 
 function App() {
   const { pokemon, loadingSpawns } = usePokedata(version);
