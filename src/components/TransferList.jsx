@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import ListBox from "./ListBox";
 import { Button } from "@mui/material";
 
-export default function TransferList({ items, selected, setSelected }) {
+export default function TransferList({ items, selected, setSelected, leftLabel, rightLabel }) {
   const [selectedSelected, setSelectedSelected] = useState([]);
   const [selectedUnselected, setSelectedUnselected] = useState([]);
 
@@ -23,7 +23,7 @@ export default function TransferList({ items, selected, setSelected }) {
         !selected.find((selectedItem) => item.value === selectedItem.value)
     );
   }, [items, selected]);
-  
+
   const handleSelectAll = useCallback(() => {
     setSelected(items);
   }, [items]);
@@ -48,6 +48,7 @@ export default function TransferList({ items, selected, setSelected }) {
   return (
     <Stack direction="row" sx={{ flexBasis: 0, minHeight: 0, flexGrow: 1 }}>
       <ListBox
+        label={leftLabel}
         items={unselected}
         selected={selectedSelected}
         setSelected={setSelectedSelected}
@@ -67,6 +68,7 @@ export default function TransferList({ items, selected, setSelected }) {
         </Button>
       </Stack>
       <ListBox
+        label={rightLabel}
         items={selected}
         selected={selectedUnselected}
         setSelected={setSelectedUnselected}

@@ -64,6 +64,8 @@ function App() {
       <Stack direction="column" sx={{ height: "100vh" }} p={1} gap={1}>
         {pokemon && (
           <TransferList
+            leftLabel="In"
+            rightLabel="Axed"
             items={pokemon}
             selected={selected}
             setSelected={setSelected}

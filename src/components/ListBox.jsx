@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 
-export default function ListBox({ items, selected, setSelected }) {
+export default function ListBox({ items, selected, setSelected, label }) {
   const [search, setSearch] = useState("");
 
   const filteredList = useMemo(
@@ -38,6 +38,7 @@ export default function ListBox({ items, selected, setSelected }) {
 
   return (
     <Stack direction="column" sx={{ flexBasis: 0, minWidth: 0, flexGrow: 1 }}>
+      <h1>{label}</h1>
       <TextField
         value={search}
         onChange={(e) => setSearch(e.target.value)}
