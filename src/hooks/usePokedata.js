@@ -13,7 +13,7 @@ export default function usePokedata(version = "main") {
     const fetchAllSpawns = async () => {
       setLoadingSpawns(true);
       const found = [];
-      let link = "https://gitlab.com/api/v4/projects/cable-mc%2Fcobblemon/repository/tree?id=cable-mc/cobblemon&path=common/src/main/resources/data/cobblemon/spawn_pool_world&per_page=100&recursive=true&ref=1.5.2&pagination=keyset&order_by=id";
+      let link = `https://gitlab.com/api/v4/projects/cable-mc%2Fcobblemon/repository/tree?id=cable-mc/cobblemon&path=common/src/main/resources/data/cobblemon/spawn_pool_world&per_page=100&recursive=true&ref=${version}&pagination=keyset&order_by=id`;
       do {
         const response = await fetch(link);
         const results = await response.json();
